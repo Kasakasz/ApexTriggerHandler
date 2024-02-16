@@ -16,6 +16,7 @@ public virtual class TriggerHandler {
   static {
     loopCountMap = new Map<String, LoopCount>();
     bypassedHandlers = new Set<String>();
+    bypassedTriggers = new Set<String>();
   }
   
   // constructor
@@ -79,20 +80,36 @@ public virtual class TriggerHandler {
    * public static methods
    ***************************************/
 
-  public static void bypass(String handlerName) {
+  public static void bypassHandlers(String handlerName) {
     TriggerHandler.bypassedHandlers.add(handlerName);
   }
 
-  public static void clearBypass(String handlerName) {
+  public static void clearHandlerBypass(String handlerName) {
     TriggerHandler.bypassedHandlers.remove(handlerName);
   }
 
-  public static Boolean isBypassed(String handlerName) {
+  public static Boolean isHandlerBypassed(String handlerName) {
     return TriggerHandler.bypassedHandlers.contains(handlerName);
   }
 
-  public static void clearAllBypasses() {
+  public static void clearAllHandlerBypasses() {
     TriggerHandler.bypassedHandlers.clear();
+  }
+
+  public static void bypassTriggers(String triggerName) {
+    TriggerHandler.bypassedTriggers.add(triggerName);
+  }
+
+  public static void clearTriggerBypass(String triggerName) {
+    TriggerHandler.bypassedTriggers.remove(triggerName);
+  }
+
+  public static Boolean isTriggerBypassed(String triggerName) {
+    return TriggerHandler.bypassedTriggers.contains(triggerName);
+  }
+
+  public static void clearAllTriggerBypasses() {
+    TriggerHandler.bypassedTriggers.clear();
   }
 
   /***************************************
@@ -156,12 +173,23 @@ public virtual class TriggerHandler {
     if(!this.isTriggerExecuting || this.context == null) {
       throw new TriggerHandlerException('Trigger handler called outside of Trigger execution');
     }
-    return !TriggerHandler.bypassedHandlers.contains(getHandlerName());
+    return !TriggerHandler.bypassedHandlers.contains(getHandlerName()) && !TriggerHandler.bypassedTriggers.contains(getSObjectName());
   }
 
   @TestVisible
   private String getHandlerName() {
     return this.toString().substringBefore(':');
+  }
+
+  @TestVisible
+  private String getSObjectName() {
+    String sObjectName;
+    if (Trigger.isInsert || Trigger.isUpdate || Trigger.isUndelete) {
+      sObjectName = String.valueOf(Trigger.new[0].getSObjectType());
+    } else {
+      sObjectName = String.valueOf(Trigger.old[0].getSObjectType());
+    }
+    return sObjectName;
   }
 
   /***************************************
