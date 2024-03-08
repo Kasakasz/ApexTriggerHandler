@@ -57,7 +57,7 @@ public class OpportunityTriggerHandler extends TriggerHandler {
 }
 ```
 
-To use the trigger handler, you only need to construct an instance of your trigger handler within the trigger handler itself and call the `run()` method. Here is an example of the Opportunity trigger.
+To use the trigger handler, you only need to construct an instance of your trigger handler executor within the trigger itself and call the `executeTriggerHandlers(SObjectType)` method. Here is an example of the Opportunity trigger.
 
 ```java
 trigger OpportunityTrigger on Opportunity (before insert, before update) {
