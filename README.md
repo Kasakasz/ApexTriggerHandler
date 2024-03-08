@@ -61,7 +61,7 @@ To use the trigger handler, you only need to construct an instance of your trigg
 
 ```java
 trigger OpportunityTrigger on Opportunity (before insert, before update) {
-  new OpportunityTriggerHandler().run();
+  new TriggerHandlerExecutor().executeTriggerHandlers(Opportunity.getSObjectType());
 }
 ```
 
